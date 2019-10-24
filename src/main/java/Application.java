@@ -33,7 +33,6 @@ public class Application {
                 .forEach(System.out::println);
     }
 
-
     public static void main(String[] args) {
         GaussJordan gaussJordan = new GaussJordan();
         List<List<Float>> extendedMatrix = inputExtendMatrix();
