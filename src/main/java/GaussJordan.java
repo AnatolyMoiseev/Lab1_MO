@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,30 +21,36 @@ public class GaussJordan {
 
     public List<List<Float>> getBaseView() {
         List<Float> masterRow = new ArrayList<>();
-        List<Float> tmpRow = new ArrayList<>();
-        List<List<Float>> resultMatrix = new ArrayList<>();
 
         for (List<Float> row : extendMatrix) {
             for (Float element : row) {
-                if (Math.abs(element) >= EPSILON && !row.equals(masterRow)) {
-                    tmpRow = row.stream().map(rowElement -> rowElement / element).collect(Collectors.toList());
-                    masterRow = row;
+                if (Math.abs(element) >= EPSILON && element == 1f && !row.equals(masterRow)) {
+                    masterRow = row.stream().map(rowElement -> rowElement / element).collect(Collectors.toList());
+                    extendMatrix.set(extendMatrix.indexOf(row), masterRow);
                     break;
                 }
             }
             for (List<Float> slaveRow : extendMatrix) {
-                if (!row.equals(slaveRow)) {
-                    int indexOf = tmpRow.indexOf(1f);
-                    tmpRow.forEach(tmpRowElement -> tmpRowElement = tmpRowElement * -row.get(indexOf));
-                    List<Float> finalTmpRow = tmpRow;
-                    slaveRow.forEach(slaveRowElement -> slaveRowElement += finalTmpRow.get(slaveRow.indexOf(slaveRowElement)));
+                if (!masterRow.equals(slaveRow)) {
+                    int indexOf = masterRow.indexOf(1f);
+                    List<Float> zhopa = masterRow
+                            .stream()
+                            .map(masterRowElement ->
+                                    masterRowElement = masterRowElement * -slaveRow.get(indexOf))
+                            .collect(Collectors.toList());
+                    List<Float> piska = slaveRow
+                            .stream()
+                            .map(slaveRowElement ->
+                                    slaveRowElement += zhopa.get(slaveRow.indexOf(slaveRowElement)))
+                            .collect(Collectors.toList());
+
+                    extendMatrix.set(extendMatrix.indexOf(slaveRow), piska);
                 }
-                resultMatrix.add(slaveRow);
             }
         }
-        resultMatrix.removeIf(this::isNullRow);
+        extendMatrix.removeIf(this::isNullRow);
 
-        return resultMatrix;
+        return extendMatrix;
     }
 
 }

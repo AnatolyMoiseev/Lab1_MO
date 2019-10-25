@@ -8,19 +8,21 @@ public class Application {
     private static List<List<Float>> inputExtendMatrix() {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("Введите количество строк расширенной матрицы:");
+        System.out.print("Введите количество строк расширенной матрицы: ");
         int sizeM = scanner.nextInt();
 
-        System.out.println("Введите количество столбцов расширенной матрицы:");
+        System.out.print("Введите количество столбцов расширенной матрицы: ");
         int sizeN = scanner.nextInt();
 
         List<List<Float>> extendedMatrix = new ArrayList<>();
 
         System.out.println("Введите расширенную матрицу:");
         for (int i = 0; i < sizeM; i++) {
+            List<Float> matrixRow = new ArrayList<>();
             for (int j = 0; j < sizeN; j++) {
-                extendedMatrix.get(i).add(scanner.nextFloat());
+                matrixRow.add(scanner.nextFloat());
             }
+            extendedMatrix.add(matrixRow);
         }
 
         return extendedMatrix;
@@ -40,7 +42,7 @@ public class Application {
         extendedMatrix.removeIf(gaussJordan::isNullRow);
         gaussJordan.setExtendMatrix(extendedMatrix);
 
-        outputResult(gaussJordan.getExtendMatrix());
+        outputResult(gaussJordan.getBaseView());
     }
 
 }
