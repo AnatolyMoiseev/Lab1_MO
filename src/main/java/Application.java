@@ -43,6 +43,14 @@ public class Application {
         gaussJordan.setExtendMatrix(extendedMatrix);
 
         outputResult(gaussJordan.getBaseView());
+
+
+        //CombinationsGenerationHelper helper = new CombinationsGenerationHelper();
+        //List<int[]> combinations = helper.generate(5,2);
+        //
+        //for (int[] combination : combinations) {
+        //    System.out.println(Arrays.toString(combination));
+        //}
     }
 
 }

@@ -1,5 +1,7 @@
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
@@ -19,12 +21,21 @@ public class GaussJordan {
         return row.stream().filter(rowElement -> Math.abs(rowElement) <= EPSILON).count() == row.size();
     }
 
+    private List<Float> addPositiveNull(List<Float> row) {
+        return row
+                .stream()
+                .map(element -> element + 0.0f)
+                .collect(Collectors.toList());
+    }
+
+
+
     public List<List<Float>> getBaseView() {
         List<Float> masterRow = new ArrayList<>();
 
         for (List<Float> row : extendMatrix) {
             for (Float element : row) {
-                if (Math.abs(element) >= EPSILON && element == 1f && !row.equals(masterRow)) {
+                if (Math.abs(element) >= EPSILON && /*element == 1f &&*/ !row.equals(masterRow)) {
                     masterRow = row.stream().map(rowElement -> rowElement / element).collect(Collectors.toList());
                     extendMatrix.set(extendMatrix.indexOf(row), masterRow);
                     break;
@@ -38,19 +49,34 @@ public class GaussJordan {
                             .map(masterRowElement ->
                                     masterRowElement = masterRowElement * -slaveRow.get(indexOf))
                             .collect(Collectors.toList());
-                    List<Float> piska = slaveRow
+
+                    List<Float> zaebala = slaveRow
                             .stream()
                             .map(slaveRowElement ->
                                     slaveRowElement += zhopa.get(slaveRow.indexOf(slaveRowElement)))
                             .collect(Collectors.toList());
 
-                    extendMatrix.set(extendMatrix.indexOf(slaveRow), piska);
+                    extendMatrix.set(extendMatrix.indexOf(slaveRow), zaebala);
                 }
             }
         }
         extendMatrix.removeIf(this::isNullRow);
 
         return extendMatrix;
+    }
+
+    public List<List<List<Float>>> getAllBaseViews() {
+        Set<Integer> set = new HashSet<>();
+
+        return new ArrayList<>();
+    }
+
+    private boolean isOneColumn(List<Float> column) {
+        return true;
+    }
+
+    private boolean isBaseView() {
+        return true;
     }
 
 }
