@@ -26,9 +26,9 @@ public class GaussJordan {
                 .collect(Collectors.toList());
     }
 
-    public List<List<Float>> getBaseView(int[] subset) {
+    private List<List<Float>> getBaseView(int[] subset) {
+        List<List<Float>> pizdec = new ArrayList<>(extendMatrix);
         List<Float> masterRow = new ArrayList<>();
-        List<List<Float>> pizdec = extendMatrix;
         int k = 0;
 
         for (List<Float> row : pizdec) {
@@ -51,14 +51,12 @@ public class GaussJordan {
                     int indexOf = masterRow.indexOf(1f);
                     List<Float> zhopa = masterRow
                             .stream()
-                            .map(masterRowElement ->
-                                    masterRowElement = masterRowElement * -slaveRow.get(indexOf))
+                            .map(masterRowElement -> masterRowElement * -slaveRow.get(indexOf))
                             .collect(Collectors.toList());
 
                     List<Float> zaebala = slaveRow
                             .stream()
-                            .map(slaveRowElement ->
-                                    slaveRowElement += zhopa.get(slaveRow.indexOf(slaveRowElement)))
+                            .map(slaveRowElement -> slaveRowElement += zhopa.get(slaveRow.indexOf(slaveRowElement)))
                             .collect(Collectors.toList());
 
                     pizdec.set(pizdec.indexOf(slaveRow), zaebala);
@@ -71,15 +69,10 @@ public class GaussJordan {
     }
 
     public List<List<List<Float>>> getAllBaseViews() {
-        List<List<List<Float>>> result = new ArrayList<>();
         SubsetsGenerationHelper helper = new SubsetsGenerationHelper();
         List<int[]> subsets = helper.generate(extendMatrix.get(0).size(), extendMatrix.size());
 
-        for (int[] subset : subsets) {
-            result.add(getBaseView(subset));
-        }
-
-        return result;
+        return subsets.stream().map(this::getBaseView).collect(Collectors.toList());
     }
 
     private boolean isOneColumn(List<Float> column) {

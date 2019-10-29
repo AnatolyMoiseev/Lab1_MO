@@ -29,9 +29,15 @@ public class Application {
     }
 
     private static void outputResult(List<List<List<Float>>> extendedMatrix) {
+        System.out.println("\nБазисные виды системы:");
+
         extendedMatrix
                 .stream()
-                .map(element -> Arrays.deepToString(element.toArray()))
+                .map(element ->
+                        Arrays.deepToString(element.stream().map(row ->
+                               Arrays.deepToString(row.toArray())
+                                        .replace(",", " ") + "\n").toArray())
+                                .replace(",", "") + "\n")
                 .forEach(System.out::println);
     }
 

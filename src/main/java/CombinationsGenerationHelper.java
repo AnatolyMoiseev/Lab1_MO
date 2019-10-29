@@ -19,7 +19,7 @@ public class CombinationsGenerationHelper {
 
     public List<int[]> generate(int n, int r) {
         List<int[]> combinations = new ArrayList<>();
-        getCombination(combinations, new int[r], 1, n, 0);
+        getCombination(combinations, new int[r], 0, n - 1, 0);
 
         return combinations;
     }
