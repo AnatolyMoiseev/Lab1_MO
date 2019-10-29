@@ -17,7 +17,7 @@ public class CombinationsGenerationHelper {
         }
     }
 
-    public  List<int[]> generate(int n, int r) {
+    public List<int[]> generate(int n, int r) {
         List<int[]> combinations = new ArrayList<>();
         getCombination(combinations, new int[r], 1, n, 0);
 

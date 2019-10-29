@@ -1,7 +1,5 @@
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import lombok.AllArgsConstructor;
@@ -28,20 +26,27 @@ public class GaussJordan {
                 .collect(Collectors.toList());
     }
 
-
-
-    public List<List<Float>> getBaseView() {
+    public List<List<Float>> getBaseView(int[] subset) {
         List<Float> masterRow = new ArrayList<>();
+        List<List<Float>> pizdec = extendMatrix;
+        int k = 0;
 
-        for (List<Float> row : extendMatrix) {
-            for (Float element : row) {
-                if (Math.abs(element) >= EPSILON && /*element == 1f &&*/ !row.equals(masterRow)) {
-                    masterRow = row.stream().map(rowElement -> rowElement / element).collect(Collectors.toList());
-                    extendMatrix.set(extendMatrix.indexOf(row), masterRow);
-                    break;
-                }
+        for (List<Float> row : pizdec) {
+            //for (Float element : row) {
+            //    if (Math.abs(element) >= EPSILON && /*element == 1f &&*/ !row.equals(masterRow)) {
+            //        masterRow = row.stream().map(rowElement -> rowElement / element).collect(Collectors.toList());
+            //        extendMatrix.set(extendMatrix.indexOf(row), masterRow);
+            //        break;
+            //    }
+            //}
+
+            if (!row.equals(masterRow)) {
+                int index = subset[k++];
+                masterRow = row.stream().map(rowElement -> rowElement / row.get(index)).collect(Collectors.toList());
+                pizdec.set(pizdec.indexOf(row), masterRow);
             }
-            for (List<Float> slaveRow : extendMatrix) {
+
+            for (List<Float> slaveRow : pizdec) {
                 if (!masterRow.equals(slaveRow)) {
                     int indexOf = masterRow.indexOf(1f);
                     List<Float> zhopa = masterRow
@@ -56,19 +61,25 @@ public class GaussJordan {
                                     slaveRowElement += zhopa.get(slaveRow.indexOf(slaveRowElement)))
                             .collect(Collectors.toList());
 
-                    extendMatrix.set(extendMatrix.indexOf(slaveRow), zaebala);
+                    pizdec.set(pizdec.indexOf(slaveRow), zaebala);
                 }
             }
         }
-        extendMatrix.removeIf(this::isNullRow);
+        pizdec.removeIf(this::isNullRow);
 
-        return extendMatrix;
+        return pizdec;
     }
 
     public List<List<List<Float>>> getAllBaseViews() {
-        Set<Integer> set = new HashSet<>();
+        List<List<List<Float>>> result = new ArrayList<>();
+        SubsetsGenerationHelper helper = new SubsetsGenerationHelper();
+        List<int[]> subsets = helper.generate(extendMatrix.get(0).size(), extendMatrix.size());
 
-        return new ArrayList<>();
+        for (int[] subset : subsets) {
+            result.add(getBaseView(subset));
+        }
+
+        return result;
     }
 
     private boolean isOneColumn(List<Float> column) {

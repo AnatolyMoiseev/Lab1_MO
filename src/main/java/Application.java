@@ -28,7 +28,7 @@ public class Application {
         return extendedMatrix;
     }
 
-    private static void outputResult(List<List<Float>> extendedMatrix) {
+    private static void outputResult(List<List<List<Float>>> extendedMatrix) {
         extendedMatrix
                 .stream()
                 .map(element -> Arrays.deepToString(element.toArray()))
@@ -42,15 +42,7 @@ public class Application {
         extendedMatrix.removeIf(gaussJordan::isNullRow);
         gaussJordan.setExtendMatrix(extendedMatrix);
 
-        outputResult(gaussJordan.getBaseView());
-
-
-        //CombinationsGenerationHelper helper = new CombinationsGenerationHelper();
-        //List<int[]> combinations = helper.generate(5,2);
-        //
-        //for (int[] combination : combinations) {
-        //    System.out.println(Arrays.toString(combination));
-        //}
+        outputResult(gaussJordan.getAllBaseViews());
     }
 
 }
