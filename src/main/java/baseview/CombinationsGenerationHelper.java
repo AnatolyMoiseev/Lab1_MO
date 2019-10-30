@@ -1,5 +1,7 @@
-import java.util.ArrayList;
-import java.util.List;
+package baseview;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 import lombok.NoArgsConstructor;
 
@@ -17,11 +19,17 @@ public class CombinationsGenerationHelper {
         }
     }
 
-    public List<int[]> generate(int n, int r) {
+    public List<List<Integer>> generate(int n, int r) {
         List<int[]> combinations = new ArrayList<>();
         getCombination(combinations, new int[r], 0, n - 1, 0);
 
-        return combinations;
+        return toList(combinations);
+    }
+
+    private List<List<Integer>> toList(List<int[]> combinations) {
+        return combinations.stream()
+                .map(value ->
+                        Arrays.stream(value).boxed().collect(Collectors.toList())).collect(Collectors.toList());
     }
 
 }

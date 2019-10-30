@@ -1,3 +1,5 @@
+package baseview;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -48,7 +50,7 @@ public class Application {
         extendedMatrix.removeIf(gaussJordan::isNullRow);
         gaussJordan.setExtendMatrix(extendedMatrix);
 
-        outputResult(gaussJordan.getAllBaseViews());
+        gaussJordan.getAllBaseViews();
     }
 
 }

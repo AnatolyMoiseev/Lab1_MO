@@ -1,3 +1,5 @@
+package baseview;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -6,9 +8,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SubsetsGenerationHelper {
 
-    private void permute(List<int[]> subsets, int n, int[] elements) {
+    private void permute(List<List<Integer>> subsets, int n, List<Integer> elements) {
         if(n == 1) {
-            int[] subset = elements.clone();
+            List<Integer> subset = new ArrayList<>(elements);
             subsets.add(subset);
         } else {
             for(int i = 0; i < n - 1; i++) {
@@ -23,21 +25,19 @@ public class SubsetsGenerationHelper {
         }
     }
 
-    private void swap(int[] input, int a, int b) {
-        int tmp = input[a];
-        input[a] = input[b];
-        input[b] = tmp;
+    private void swap(List<Integer> input, int a, int b) {
+        int tmp = input.get(a);
+        input.set(a, input.get(b));
+        input.set(b, tmp);
     }
 
-    public List<int[]> generate(int n, int r) {
-        List<int[]> subsets = new ArrayList<>();
+    public List<List<Integer>> generate(int n, int r) {
+        List<List<Integer>> subsets = new ArrayList<>();
 
         CombinationsGenerationHelper helper = new CombinationsGenerationHelper();
-        List<int[]> combinations = helper.generate(n, r);
+        List<List<Integer>> combinations = helper.generate(n, r);
 
-        for (int[] combination : combinations) {
-            permute(subsets, r, combination);
-        }
+        combinations.forEach(combination -> permute(subsets, r, combination));
 
         return subsets;
     }

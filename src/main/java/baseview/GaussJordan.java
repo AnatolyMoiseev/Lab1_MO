@@ -1,3 +1,5 @@
+package baseview;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class GaussJordan {
 
-    private static float EPSILON = 0.000000001f;
+    private static final float EPSILON = 0.000000001f;
 
     private List<List<Float>> extendMatrix;
 
@@ -26,7 +28,7 @@ public class GaussJordan {
                 .collect(Collectors.toList());
     }
 
-    private List<List<Float>> getBaseView(int[] subset) {
+    private List<List<Float>> getBaseView(List<Integer> subset) {
         List<List<Float>> pizdec = new ArrayList<>(extendMatrix);
         List<Float> masterRow = new ArrayList<>();
         int k = 0;
@@ -41,7 +43,7 @@ public class GaussJordan {
             //}
 
             if (!row.equals(masterRow)) {
-                int index = subset[k++];
+                int index = subset.get(k++);
                 masterRow = row.stream().map(rowElement -> rowElement / row.get(index)).collect(Collectors.toList());
                 pizdec.set(pizdec.indexOf(row), masterRow);
             }
@@ -49,17 +51,22 @@ public class GaussJordan {
             for (List<Float> slaveRow : pizdec) {
                 if (!masterRow.equals(slaveRow)) {
                     int indexOf = masterRow.indexOf(1f);
-                    List<Float> zhopa = masterRow
-                            .stream()
-                            .map(masterRowElement -> masterRowElement * -slaveRow.get(indexOf))
-                            .collect(Collectors.toList());
+                    try {
+                        List<Float> zhopa = masterRow
+                                .stream()
+                                .map(masterRowElement -> masterRowElement * -slaveRow.get(indexOf))
+                                .collect(Collectors.toList());
 
-                    List<Float> zaebala = slaveRow
-                            .stream()
-                            .map(slaveRowElement -> slaveRowElement += zhopa.get(slaveRow.indexOf(slaveRowElement)))
-                            .collect(Collectors.toList());
+                        List<Float> zaebala = slaveRow
+                                .stream()
+                                .map(slaveRowElement -> slaveRowElement += zhopa.get(slaveRow.indexOf(slaveRowElement)))
+                                .collect(Collectors.toList());
 
-                    pizdec.set(pizdec.indexOf(slaveRow), zaebala);
+                        pizdec.set(pizdec.indexOf(slaveRow), zaebala);
+                    } catch (ArrayIndexOutOfBoundsException ex) {
+                        System.out.println(indexOf);
+                        System.out.println(masterRow.toString());
+                    }
                 }
             }
         }
@@ -70,9 +77,21 @@ public class GaussJordan {
 
     public List<List<List<Float>>> getAllBaseViews() {
         SubsetsGenerationHelper helper = new SubsetsGenerationHelper();
-        List<int[]> subsets = helper.generate(extendMatrix.get(0).size(), extendMatrix.size());
+        List<List<Integer>> subsets = helper.generate(extendMatrix.get(0).size() - 1, extendMatrix.size());
+
+        List<Integer> zeros = getMatrixZeros();
+
+        subsets.removeIf(this::isIndexOfZero);
 
         return subsets.stream().map(this::getBaseView).collect(Collectors.toList());
+    }
+
+    private boolean isIndexOfZero(List<Integer> row) {
+        return getMatrixZeros().stream().anyMatch(row::contains);
+    }
+
+    private List<Integer> getMatrixZeros() {
+        return extendMatrix.stream().map(floats -> floats.indexOf(0f)).collect(Collectors.toList());
     }
 
     private boolean isOneColumn(List<Float> column) {
