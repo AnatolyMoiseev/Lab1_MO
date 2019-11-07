@@ -50,7 +50,7 @@ public class Application {
         extendedMatrix.removeIf(gaussJordan::isNullRow);
         gaussJordan.setExtendMatrix(extendedMatrix);
 
-        gaussJordan.getAllBaseViews();
+        outputResult(gaussJordan.getAllBaseViews());
     }
 
 }

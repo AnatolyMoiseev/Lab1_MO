@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javafx.util.Pair;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -44,29 +45,27 @@ public class GaussJordan {
 
             if (!row.equals(masterRow)) {
                 int index = subset.get(k++);
-                masterRow = row.stream().map(rowElement -> rowElement / row.get(index)).collect(Collectors.toList());
+                Float masterElement = row.get(index);
+                if (Math.abs(masterElement) <= EPSILON)
+                    return new ArrayList<>();
+                masterRow = row.stream().map(rowElement -> rowElement / masterElement).collect(Collectors.toList());
                 pizdec.set(pizdec.indexOf(row), masterRow);
             }
 
             for (List<Float> slaveRow : pizdec) {
                 if (!masterRow.equals(slaveRow)) {
                     int indexOf = masterRow.indexOf(1f);
-                    try {
-                        List<Float> zhopa = masterRow
-                                .stream()
-                                .map(masterRowElement -> masterRowElement * -slaveRow.get(indexOf))
-                                .collect(Collectors.toList());
+                    List<Float> zhopa = masterRow
+                            .stream()
+                            .map(masterRowElement -> masterRowElement * -slaveRow.get(indexOf))
+                            .collect(Collectors.toList());
 
-                        List<Float> zaebala = slaveRow
-                                .stream()
-                                .map(slaveRowElement -> slaveRowElement += zhopa.get(slaveRow.indexOf(slaveRowElement)))
-                                .collect(Collectors.toList());
+                    List<Float> zaebala = slaveRow
+                            .stream()
+                            .map(slaveRowElement -> slaveRowElement += zhopa.get(slaveRow.indexOf(slaveRowElement)))
+                            .collect(Collectors.toList());
 
-                        pizdec.set(pizdec.indexOf(slaveRow), zaebala);
-                    } catch (ArrayIndexOutOfBoundsException ex) {
-                        System.out.println(indexOf);
-                        System.out.println(masterRow.toString());
-                    }
+                    pizdec.set(pizdec.indexOf(slaveRow), zaebala);
                 }
             }
         }
@@ -79,19 +78,38 @@ public class GaussJordan {
         SubsetsGenerationHelper helper = new SubsetsGenerationHelper();
         List<List<Integer>> subsets = helper.generate(extendMatrix.get(0).size() - 1, extendMatrix.size());
 
-        List<Integer> zeros = getMatrixZeros();
+        List<Pair<Integer, Integer>> zeros = getMatrixZeros();
 
-        subsets.removeIf(this::isIndexOfZero);
+        for (Pair<Integer, Integer> zero : zeros) {
+            subsets.removeIf(subset -> isIndexOfZero(subset, zero));
+        }
 
         return subsets.stream().map(this::getBaseView).collect(Collectors.toList());
     }
 
-    private boolean isIndexOfZero(List<Integer> row) {
-        return getMatrixZeros().stream().anyMatch(row::contains);
+    private boolean isIndexOfZero(List<Integer> subset, Pair<Integer, Integer> zero) {
+        for (int i = 0; i < subset.size(); i++) {
+            if (subset.get(i).equals(zero.getValue()) && i == zero.getKey()) {
+                return true;
+            }
+        }
+        return false;
     }
 
-    private List<Integer> getMatrixZeros() {
-        return extendMatrix.stream().map(floats -> floats.indexOf(0f)).collect(Collectors.toList());
+    private List<Pair<Integer, Integer>> getMatrixZeros() {
+        List<Pair<Integer, Integer>> zeros = new ArrayList<>();
+
+        for (int i = 0; i < extendMatrix.size(); i++) {
+            List<Float> el = extendMatrix.get(i);
+            for (int i1 = 0; i1 < el.size(); i1++) {
+                if (Math.abs(el.get(i1)) <= EPSILON) {
+                    Pair<Integer, Integer> pair = new Pair<>(i, i1);
+                    zeros.add(pair);
+                }
+            }
+        }
+
+        return zeros;
     }
 
     private boolean isOneColumn(List<Float> column) {
