@@ -48,7 +48,7 @@ public class GaussJordan {
                 Float masterElement = row.get(index);
                 if (Math.abs(masterElement) <= EPSILON)
                     return new ArrayList<>();
-                masterRow = row.stream().map(rowElement -> rowElement / masterElement).collect(Collectors.toList());
+                masterRow = row.stream().map(rowElement -> rowElement / masterElement + 0.0f).collect(Collectors.toList());
                 pizdec.set(pizdec.indexOf(row), masterRow);
             }
 
@@ -84,7 +84,10 @@ public class GaussJordan {
             subsets.removeIf(subset -> isIndexOfZero(subset, zero));
         }
 
-        return subsets.stream().map(this::getBaseView).collect(Collectors.toList());
+        List<List<List<Float>>> result = subsets.stream().map(this::getBaseView).collect(Collectors.toList());
+        result.removeIf(List::isEmpty);
+
+        return result;
     }
 
     private boolean isIndexOfZero(List<Integer> subset, Pair<Integer, Integer> zero) {
