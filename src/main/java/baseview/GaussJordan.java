@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class GaussJordan {
 
-    private static final float EPSILON = 0.000000001f;
+    public static final float EPSILON = 0.000000001f;
 
     private List<List<Float>> extendMatrix;
 
